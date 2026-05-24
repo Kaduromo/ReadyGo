@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Ready Go Trainer Pro</title>
 <style>
@@ -120,7 +120,14 @@
 
 <div class="card">
     <h1>READY GO</h1>
-    <div class="subtitle">2–2.5 sec interval • x3–x6 speed • referee mode</div>
+    <div class="subtitle">2–2.5 sec interval • x1–x2 speed • referee mode</div>
+
+    <!-- Ползунок для регулировки скорости -->
+    <div style="margin-top: 14px; text-align: center;">
+        <label for="speedRange">Скорость: </label>
+        <input type="range" id="speedRange" min="1" max="2" step="0.01" value="1"/>
+        <span id="speedValue">x1.00</span>
+    </div>
 
     <div class="status" id="status">Idle</div>
     <div class="countdown" id="countdown">—</div>
@@ -146,6 +153,8 @@ const statusEl = document.getElementById('status');
 const countdownEl = document.getElementById('countdown');
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
+const speedRange = document.getElementById('speedRange');
+const speedValue = document.getElementById('speedValue');
 
 function loadVoices() {
     voices = speechSynthesis.getVoices().filter(v => v.lang.includes('en'));
@@ -168,10 +177,12 @@ function pulse() {
     countdownEl.classList.add('pulse');
 }
 
-function randomRate() {
-    return 2 + Math.random() * 2; // 3–6x
-}
+// Обновляем отображение скорости при изменении ползунка
+speedRange.oninput = () => {
+    speedValue.textContent = 'x' + parseFloat(speedRange.value).toFixed(2);
+};
 
+// Используем значение ползунка для скорости речи
 function speak() {
     const styles = [
         "READY GO!",
@@ -187,7 +198,7 @@ function speak() {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'en-US';
     u.volume = 1;
-    u.rate = randomRate();
+    u.rate = parseFloat(speedRange.value); // берем значение скорости из ползунка
 
     const v = getVoice();
     if (v) u.voice = v;
@@ -195,7 +206,7 @@ function speak() {
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
 
-    statusEl.textContent = "Ref: " + text + " (x" + u.rate.toFixed(1) + ")";
+    statusEl.textContent = "Ref: " + text + " (x" + u.rate.toFixed(2) + ")";
 }
 
 function schedule() {
@@ -242,6 +253,7 @@ function stop() {
     countdownEl.textContent = '—';
 }
 
+// Обработчики кнопок
 startBtn.onclick = start;
 stopBtn.onclick = stop;
 </script>
