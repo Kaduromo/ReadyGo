@@ -48,7 +48,16 @@
     .subtitle {
         font-size: 12px;
         opacity: 0.6;
-        margin-bottom: 18px;
+        margin-bottom: 10px;
+    }
+
+    /* Стиль для селекта */
+    select {
+        margin-top: 10px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: none;
+        font-size: 14px;
     }
 
     .status {
@@ -122,6 +131,26 @@
     <h1>READY GO</h1>
     <div class="subtitle">2–2.5 sec interval • x3–x6 speed • referee mode</div>
 
+    <!-- Выпадающий список для выбора скорости -->
+    <div style="margin-top: 14px;">
+        <label for="speedSelect">Скорость: </label>
+        <select id="speedSelect">
+            <option value="1">1</option>
+            <option value="1.5" selected>1.5</option>
+            <option value="2">2</option>
+            <option value="2.5">2.5</option>
+            <option value="3">3</option>
+            <option value="3.5">3.5</option>
+            <option value="4">4</option>
+            <option value="4.5">4.5</option>
+            <option value="5">5</option>
+            <option value="5.5">5.5</option>
+            <option value="6">6</option>
+            <option value="6.5">6.5</option>
+            <option value="7">7</option>
+        </select>
+    </div>
+
     <div class="status" id="status">Idle</div>
     <div class="countdown" id="countdown">—</div>
 
@@ -146,6 +175,14 @@ const statusEl = document.getElementById('status');
 const countdownEl = document.getElementById('countdown');
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
+const speedSelect = document.getElementById('speedSelect');
+
+let currentSpeed = parseFloat(speedSelect.value);
+
+// Обновляем текущую скорость при изменении селекта
+speedSelect.onchange = () => {
+    currentSpeed = parseFloat(speedSelect.value);
+};
 
 function loadVoices() {
     voices = speechSynthesis.getVoices().filter(v => v.lang.includes('en'));
@@ -168,9 +205,7 @@ function pulse() {
     countdownEl.classList.add('pulse');
 }
 
-// Постоянная скорость 1.5
-const fixedRate = 1.5;
-
+// Используем текущую выбранную скорость
 function speak() {
     const styles = [
         "READY GO!",
@@ -186,7 +221,7 @@ function speak() {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'en-US';
     u.volume = 1;
-    u.rate = fixedRate; // фиксированная скорость
+    u.rate = currentSpeed;
 
     const v = getVoice();
     if (v) u.voice = v;
